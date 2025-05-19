@@ -16,7 +16,7 @@ def registrarDispositivo():
     # Solicitar información al usuario
     print("\nPor favor ingrese los datos del dispositivo médico")
     fechaIngreso = input("Fecha de ingreso: ")
-    codigo = input("Código único: ")
+    codigo = input("Ingrese un código único: ")
     if codigo in dispositivoMedico: # Verificar que el código no se repita con un if
         print("...No se puede registrar un código ya usado\n")
         return
@@ -26,13 +26,13 @@ def registrarDispositivo():
     
     # Registrar los datos en el diccionario
     dispositivoMedico[codigo] = {
-        "fechaIngreso": fechaIngreso,
-        "nombre": nombre,
-        "marca": marca,
-        "modelo": modelo,
-        "usos": 0, # Siempre empezará en cero ya que los dispositivos llegan nuevos
-        "estado de uso": "Sin uso", # Por lo tanto siempre empezará en "Sin uso"
-        "esterilizacion": "N.A.", # No aplica por ser nuevo
+        "Fecha de ingreso": fechaIngreso,
+        "Nombre": nombre,
+        "Marca": marca,
+        "Modelo": modelo,
+        "Usos": 0, # Siempre empezará en cero ya que los dispositivos llegan nuevos
+        "Estado de uso": "Sin uso", # Por lo tanto siempre empezará en "Sin uso"
+        "Esterilización": "N.A.", # No aplica por ser nuevo
     }
 
     # Enviar mensaje de confirmación de registro
@@ -58,26 +58,26 @@ def registrarUsoReuso():
 
         # Registrar los datos en el diccionario
         usosReusos.setdefault(codigo, []).append({
-            "fechaUsoReuso": fechaUsoReuso,
-            "nombreCirugia": nombreCirugia,
-            "encuentro": encuentro,
-            "historiaClinica": historiaClinica,
-            "paciente": paciente,            
-            "medico": medico,
-            "observaciones": observaciones
+            "Fecha de uso o reúso": fechaUsoReuso,
+            "Nombre de cirugía": nombreCirugia,
+            "Encuentro": encuentro,
+            "Historia clínica": historiaClinica,
+            "Paciente": paciente,            
+            "Médico": medico,
+            "Observaciones": observaciones
         })
 
         # Aumentar el contador de usos
-        dispositivoMedico[codigo]["usos"] += 1
+        dispositivoMedico[codigo]["Usos"] += 1
 
         # Cambiar el estado de uso si llega a los 5 usos a más
-        if dispositivoMedico[codigo]["usos"] >= 5:
-            dispositivoMedico[codigo]["estado de uso"] = "No reusar"
+        if dispositivoMedico[codigo]["Usos"] >= 5:
+            dispositivoMedico[codigo]["Estado de uso"] = "No reusar"
         else:
-            dispositivoMedico[codigo]["estado de uso"] = "Apto para reúso"
+            dispositivoMedico[codigo]["Estado de uso"] = "Apto para reúso"
 
         # Enviar mensaje de resgitro de uso/reúso + estado de uso/reúso actualizado
-        print(f"...Uso/reúso registrado. Estado de uso: {dispositivoMedico[codigo]['estado de uso']}\n")
+        print(f"...Uso/reúso registrado. Estado de uso: {dispositivoMedico[codigo]['Estado de uso']}\n")
 
     else:
         # Enviar mensaje de error
@@ -104,32 +104,36 @@ def registrarEsterilizacion():
         bioluminiscencia = input("Resultado del examen de Bioluminiscencia (ATP): ")
         metodoEsterilizacion = input("Método de esterilización: ")
 
-        # Registrar los datos en el diccionario
-        procesosEsterilizacion.setdefault(codigo, []).append({ #-------------------------------------
-            "fechaEsterilizacion": fechaEsterilizacion,
-            "tipoLavado": tipoLavado,
-            "tiempoLavado": tiempoLavado,
-            "secadoEquipo": secadoEquipo,
-            "tiempoSecado": tiempoSecado,
-            "realizoTermodesinfeccion": realizoTermodesinfeccion,
-            "tiempoTermodesinfeccion": tiempoTermodesinfeccion,
-            "temperaturaTermodesinfeccion": temperaturaTermodesinfeccion,
-            "bioluminiscencia": bioluminiscencia,
-            "metodoEsterilizacion": metodoEsterilizacion,
-        })
-
         # Cambiar el estado de esterilización
-        if bioluminiscencia == "N.A.":
-            dispositivoMedico[codigo]["esterilizacion"] = "N.A."
+        if bioluminiscencia != "N.A." and not bioluminiscencia.isdigit():
+            print("...Error: Ingrese un número o 'N.A.' para Bioluminiscencia.")
+            return
+        
+        elif bioluminiscencia == "N.A.":
+            dispositivoMedico[codigo]["Esterilización"] = "N.A."
 
-        elif int(bioluminiscencia) <= 100:
-            dispositivoMedico[codigo]["esterilizacion"] = "Aprobada"
+        elif int(bioluminiscencia) < 100:
+            dispositivoMedico[codigo]["Esterilización"] = "Aprobada"
 
         else:
-            dispositivoMedico[codigo]["esterilizacion"] = "Desaprobada"
+            dispositivoMedico[codigo]["Esterilización"] = "Desaprobada"
+        
+        # Registrar los datos en el diccionario
+        procesosEsterilizacion.setdefault(codigo, []).append({ #-------------------------------------
+            "Fecha de esterilización": fechaEsterilizacion,
+            "Tipo de lavado": tipoLavado,
+            "Tiempo de lavado": tiempoLavado,
+            "¿Secado de equipo'": secadoEquipo,
+            "Tiempo de secado": tiempoSecado,
+            "¿Realizó termodesinfección'": realizoTermodesinfeccion,
+            "Tiempo de termodesinfección": tiempoTermodesinfeccion,
+            "Temperatura de termodesinfección": temperaturaTermodesinfeccion,
+            "Bioluminiscencia": bioluminiscencia,
+            "Método de esterilización": metodoEsterilizacion,
+        })
 
         # Enviar mensaje de resgitro de esterilización
-        print(f"...Esterilización registrada. Estado: {dispositivoMedico[codigo]['esterilizacion']}\n")
+        print(f"...Esterilización registrada. Estado: {dispositivoMedico[codigo]['Esterilización']}\n")
     else:
         print("...Dispositivo no registrado")
 
@@ -143,7 +147,7 @@ def informeEstado():
     if codigo in dispositivoMedico: # Verificar que el código está en el diccionario
         # Si es verdadero entrega la información
         informacion = dispositivoMedico[codigo]        
-        print(f"...Estado de uso: {informacion['estado de uso']}, Esterilización: {informacion['esterilizacion']}\n")
+        print(f"...Estado de uso: {informacion['Estado de uso']}, Esterilización: {informacion['Esterilización']}\n")
     else:
         print("...Dispositivo no registrado\n")
 
@@ -158,7 +162,7 @@ def informeUsoReuso():
         # Si es verdadero entrega la información
         informacion = usosReusos.get(codigo,[])        
         if informacion:
-            print(f"...Informe de usos y reúsos del dispositivo {codigo}:\n")
+            print(f"...Informe de uso y reúso del dispositivo {codigo}:\n")
             for id, registro in enumerate(informacion, start=1):
                 print(f"Reúso #{id}:")
                 for campo, valor in registro.items():
@@ -195,7 +199,7 @@ def informeEsterilizacion():
 # Menú principal del sistema en bucle
 while True:
     # Menú de opciones del menú principal
-    print("MENÚ PRINCIPAL\n1. Registrar Dispositivo\n2. Registrar Uso\n3. Registrar Esterilización\n4. Informes\n5. Salir y borrar\n")
+    print("\nMENÚ PRINCIPAL\n1. Registrar Dispositivo\n2. Registrar Uso\n3. Registrar Esterilización\n4. Informes\n5. Salir y borrar\n")
     
     # Solicitar opción al usuario
     opcionElegida = input("Seleccione una opción: ")
